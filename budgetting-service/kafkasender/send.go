@@ -9,8 +9,6 @@ import (
 )
 
 func CreateNotification(kaf kafka.KafkaProducer, request model.Send) error{
-
-	
 	response, err := json.Marshal(request)
 	if err != nil {
 		log.Println("cannot produce messages via kafka", err.Error())

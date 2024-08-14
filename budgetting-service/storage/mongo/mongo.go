@@ -25,7 +25,6 @@ func NewMongoConnection() (u.InitRoot, error) {
 	config:=config.Load()
 	clientOptions := options.Client().ApplyURI(config.MongoDBConnection)
 
-	// Connect to MongoDB
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatal(err)

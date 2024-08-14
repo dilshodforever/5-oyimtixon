@@ -1,8 +1,14 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	pb "github.com/dilshodforever/5-oyimtixon/genprotos/transactions"
+    "github.com/gin-gonic/gin"
+    pb "github.com/dilshodforever/5-oyimtixon/genprotos/transactions"
+    "github.com/eapache/go-resiliency/breaker"
+    "time"
+)
+
+var (
+    transactionBreaker = breaker.New(3, 1, time.Minute)
 )
 
 // CreateTransaction handles creating a new transaction
@@ -18,20 +24,33 @@ import (
 // @Failure      500 {string} string "Error while creating transaction"
 // @Router       /transaction/create [post]
 func (h *Handler) CreateTransaction(ctx *gin.Context) {
-	var req pb.CreateTransactionRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(400, gin.H{"error": "Invalid input"})
-		return
-	}
+    var req pb.CreateTransactionRequest
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        ctx.JSON(400, gin.H{"error": "Invalid input"})
+        return
+    }
 
-	res, err := h.Transaction.CreateTransaction(ctx, &req)
-	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+    err := transactionBreaker.Run(func() error {
+        res, err := h.Transaction.CreateTransaction(ctx, &req)
+        if err != nil {
+            return err
+        }
 
-	ctx.JSON(200, res)
+        ctx.JSON(200, res)
+        return nil
+    })
+
+    // Handle circuit breaker errors
+    if err != nil {
+        if err == breaker.ErrBreakerOpen {
+            ctx.JSON(500, gin.H{"error": "Service is temporarily unavailable. Please try again later."})
+        } else {
+            ctx.JSON(500, gin.H{"error": err.Error()})
+        }
+        return
+    }
 }
+
 
 // GetTransaction handles retrieving a transaction by ID
 // @Summary      Get Transaction by ID

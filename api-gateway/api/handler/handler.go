@@ -6,6 +6,7 @@ import (
 	pbc "github.com/dilshodforever/5-oyimtixon/genprotos/categories"
     pbg "github.com/dilshodforever/5-oyimtixon/genprotos/goals"
     pbt "github.com/dilshodforever/5-oyimtixon/genprotos/transactions"
+    pbn "github.com/dilshodforever/5-oyimtixon/genprotos/notifications"
 )
 
 type Handler struct {
@@ -14,6 +15,7 @@ type Handler struct {
     Category  pbc.CategoryServiceClient
     Goal      pbg.GoalServiceClient
     Transaction pbt.TransactionServiceClient
+    Notification pbn.NotificationtServiceClient
 }
 
 func NewHandler(
@@ -22,6 +24,8 @@ func NewHandler(
     category pbc.CategoryServiceClient, 
     goal pbg.GoalServiceClient,
     transaction pbt.TransactionServiceClient,
+    notification pbn.NotificationtServiceClient,
+
 ) *Handler {
 	return &Handler{
 		Account:   account,
@@ -29,5 +33,6 @@ func NewHandler(
         Category:  category,
         Goal:      goal,
         Transaction: transaction,
+        Notification: notification,
 	}
 }

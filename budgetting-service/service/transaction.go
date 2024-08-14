@@ -45,7 +45,7 @@ func (s *TransactionService) CreateTransaction(ctx context.Context, req *pb.Crea
 		return &pb.TransactionResponse{Success: false, Message: "Failed to update balance"}, err
 	}
 	if !check {
-		kaf:=kafkaconnect.ConnectKAfka()
+		kaf:=kafkaconnect.ConnectToKafka()
 		request := model.Send{Message: "Your Budget was empty", Userid: req.UserId}
 		err=sender.CreateNotification(kaf,request)
 		if err != nil {
@@ -71,7 +71,7 @@ func (s *TransactionService) CreateTransaction(ctx context.Context, req *pb.Crea
 		return &pb.TransactionResponse{Success: false, Message: "Failed to update goal balance"}, err
 	}
 	if !goalcheck{
-		kaf:=kafkaconnect.ConnectKAfka()
+		kaf:=kafkaconnect.ConnectToKafka()
 		request := model.Send{Message: message, Userid: req.UserId}
 		err=sender.CreateNotification(kaf,request)
 		if err != nil {

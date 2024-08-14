@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -21,7 +22,7 @@ func (s *AccountService) CreateGoal(ctx context.Context, req *goals.CreateGoalRe
 		"TargetAmount":  req.TargetAmount,
 		"CurrentAmount": 0,
 		"deadline":      req.Deadline,
-		"status":        req.Status,
+		"status":        "Inprogres",
 	})
 	if err != nil {
 		log.Printf("Failed to create goal: %v", err)
@@ -67,12 +68,12 @@ func (s *AccountService) UpdateGoal(ctx context.Context, req *goals.UpdateGoalRe
 	if req.Status != "" {
 		update["status"] = req.Status
 	}
-
+	fmt.Println("filter", update)
 	if len(update) == 0 {
 		return &goals.GoalResponse{Success: false, Message: "Nothing to update"}, nil
 	}
 
-	_, err := coll.UpdateOne(ctx, bson.M{"_id": req.Id}, bson.M{"$set": update})
+	_, err := coll.UpdateOne(ctx, bson.M{"id": req.Id}, bson.M{"$set": update})
 	if err != nil {
 		log.Printf("Failed to update goal: %v", err)
 		return &goals.GoalResponse{Success: false, Message: "Failed to update goal"}, err
@@ -84,7 +85,7 @@ func (s *AccountService) UpdateGoal(ctx context.Context, req *goals.UpdateGoalRe
 func (s *AccountService) DeleteGoal(ctx context.Context, req *goals.DeleteGoalRequest) (*goals.GoalResponse, error) {
 	coll := s.db.Collection("goals")
 
-	_, err := coll.DeleteOne(ctx, bson.M{"_id": req.Id})
+	_, err := coll.DeleteOne(ctx, bson.M{"id": req.Id})
 	if err != nil {
 		log.Printf("Failed to delete goal: %v", err)
 		return &goals.GoalResponse{Success: false, Message: "Failed to delete goal"}, err
@@ -110,12 +111,13 @@ func (s *AccountService) ListGoals(ctx context.Context, req *goals.ListGoalsRequ
 		filter["current_amount"] = req.CurrentAmount
 	}
 	if req.Deadline != "" {
+		
 		filter["deadline"] = req.Deadline
 	}
 	if req.Status != "" {
+		
 		filter["status"] = req.Status
 	}
-
 	cursor, err := coll.Find(ctx, filter)
 	if err != nil {
 		log.Printf("Failed to list goals: %v", err)
@@ -180,10 +182,38 @@ func (s *AccountService) CheckGoal(ctx context.Context, userId string) (bool, st
 	// Check if 'now' matches the 'Deadline'
 	if now == result.Deadline {
 		if result.CurrentAmount < result.TargetAmount {
+			err= s.UpdateStatusByUserId(ctx,userId,"Filed")
+			if err!=nil{
+				log.Print("Error while update goal status")
+				return false, "", err
+			}
 			return false, "The deadline has passed, and you did not reach your savings goal.", nil
 		}
+		   err= s.UpdateStatusByUserId(ctx,userId,"Success")
+			if err!=nil{
+				log.Print("Error while update goal status")
+				return false, "", err
+			}
 		return false, "Congratulations! You reached your savings goal by the deadline.", nil
 	}
 
 	return true, "", nil
+}
+
+
+
+
+func (s *AccountService) UpdateStatusByUserId(ctx context.Context, userid string, status string) (error) {
+	coll := s.db.Collection("goals")
+	update := bson.M{
+		"$set": bson.M{
+			"status":     status,
+		},
+	}
+	_, err := coll.UpdateOne(ctx, bson.M{"UserId": userid}, update)
+	if err != nil {
+		log.Printf("Failed to update account: %v", err)
+		return err
+	}
+	return nil
 }

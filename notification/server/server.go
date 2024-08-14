@@ -7,6 +7,7 @@ import (
 	"github.com/dilshodforever/5-oyimtixon/kafka"
 	postgres "github.com/dilshodforever/5-oyimtixon/storage/mongo"
 	"github.com/dilshodforever/5-oyimtixon/service"
+	pb "github.com/dilshodforever/5-oyimtixon/genprotos/notifications"
 	"google.golang.org/grpc"
 )
 
@@ -21,12 +22,14 @@ func Connection() net.Listener {
 	if err != nil {
 		log.Fatal("Error while starting TCP listener: ", err.Error())
 	}
-
+	notifications:=service.NewNotificationService(db)
 	s := grpc.NewServer()
+	pb.RegisterNotificationtServiceServer(s, notifications)
+	
 	brokers := []string{"localhost:9092"}
 
 	kcm := kafka.NewKafkaConsumerManager()
-	appService := service.NewAccountService(db)
+	appService := service.NewNotificationService(db)
 
 	if err := kcm.RegisterConsumer(brokers, "create", "root", kafka.StartLevel(appService)); err != nil {
 		if err == kafka.ErrConsumerAlreadyExists {

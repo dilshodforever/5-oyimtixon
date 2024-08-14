@@ -88,5 +88,12 @@ func NewGin(h *handler.Handler) *gin.Engine {
 		trans.GET("/list", h.ListTransactions)
 	}
 
+	notif := router.Group("/notifications")
+{
+	notif.GET("/:id", h.GetNotification)
+	notif.DELETE("/:id", h.DeleteNotification)
+	notif.GET("/", h.ListNotification)
+}
+
 	return r
 }

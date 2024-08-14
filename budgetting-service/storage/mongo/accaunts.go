@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/accaunts"
@@ -155,23 +156,29 @@ func (s *AccountService) UpdateBalance(ctx context.Context, accountID string, am
 	return nil
 }
 
-
-
-
 func (s *AccountService) UpdateBalanceMinus(ctx context.Context, accountID string, amount float32) error {
 	coll := s.db.Collection("accounts")
 
-	// Use the $inc operator to add the amount to the existing balance
+	// Use the $inc operator to decrement the balance by the given amount
 	update := bson.M{
 		"$inc": bson.M{
 			"balance": -amount,
 		},
 	}
 
-	_, err := coll.UpdateOne(ctx, bson.M{"id": accountID}, update)
+	// Perform the update operation
+	result, err := coll.UpdateOne(ctx, bson.M{"id": accountID}, update)
 	if err != nil {
 		log.Printf("Failed to update account balance: %v", err)
 		return err
 	}
+
+	// Check if any document was matched by the query
+	if result.MatchedCount == 0 {
+		err = fmt.Errorf("no account found with ID %s", accountID)
+		log.Printf("Failed to update account balance: %v", err)
+		return err
+	}
+
 	return nil
 }
