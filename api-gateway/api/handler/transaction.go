@@ -1,0 +1,144 @@
+package handler
+
+import (
+	"github.com/gin-gonic/gin"
+	pb "github.com/dilshodforever/5-oyimtixon/genprotos/transactions"
+)
+
+// CreateTransaction handles creating a new transaction
+// @Summary      Create Transaction
+// @Description  Create a new transaction
+// @Tags         Transaction
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        transaction body pb.CreateTransactionRequest true "Transaction details"
+// @Success      200 {object} pb.TransactionResponse "Transaction created successfully"
+// @Failure      400 {string} string "Invalid input"
+// @Failure      500 {string} string "Error while creating transaction"
+// @Router       /transaction/create [post]
+func (h *Handler) CreateTransaction(ctx *gin.Context) {
+	var req pb.CreateTransactionRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	res, err := h.Transaction.CreateTransaction(ctx, &req)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, res)
+}
+
+// GetTransaction handles retrieving a transaction by ID
+// @Summary      Get Transaction by ID
+// @Description  Retrieve details of a transaction by ID
+// @Tags         Transaction
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id query string true "Transaction ID"
+// @Success      200 {object} pb.GetTransactionResponse "Transaction details"
+// @Failure      400 {string} string "Missing or invalid ID"
+// @Failure      500 {string} string "Error while fetching transaction"
+// @Router       /transaction/get [get]
+func (h *Handler) GetTransaction(ctx *gin.Context) {
+	id := ctx.Query("id")
+	if id == "" {
+		ctx.JSON(400, gin.H{"error": "Missing or invalid ID"})
+		return
+	}
+
+	req := &pb.GetTransactionRequest{Id: id}
+
+	res, err := h.Transaction.GetTransaction(ctx, req)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, res)
+}
+
+// UpdateTransaction handles updating a transaction
+// @Summary      Update Transaction
+// @Description  Update details of a transaction
+// @Tags         Transaction
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        transaction body pb.UpdateTransactionRequest true "Updated transaction details"
+// @Success      200 {object} pb.TransactionResponse "Transaction updated successfully"
+// @Failure      400 {string} string "Invalid input"
+// @Failure      500 {string} string "Error while updating transaction"
+// @Router       /transaction/update [put]
+func (h *Handler) UpdateTransaction(ctx *gin.Context) {
+	var req pb.UpdateTransactionRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	res, err := h.Transaction.UpdateTransaction(ctx, &req)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, res)
+}
+
+// DeleteTransaction handles deleting a transaction
+// @Summary      Delete Transaction
+// @Description  Delete a transaction by ID
+// @Tags         Transaction
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id query string true "Transaction ID"
+// @Success      200 {object} pb.TransactionResponse "Transaction deleted successfully"
+// @Failure      400 {string} string "Missing or invalid ID"
+// @Failure      500 {string} string "Error while deleting transaction"
+// @Router       /transaction/delete [delete]
+func (h *Handler) DeleteTransaction(ctx *gin.Context) {
+	id := ctx.Query("id")
+	if id == "" {
+		ctx.JSON(400, gin.H{"error": "Missing or invalid ID"})
+		return
+	}
+
+	req := &pb.DeleteTransactionRequest{Id: id}
+
+	res, err := h.Transaction.DeleteTransaction(ctx, req)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, res)
+}
+
+// ListTransactions handles listing all transactions
+// @Summary      List Transactions
+// @Description  Get a list of all transactions
+// @Tags         Transaction
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} pb.ListTransactionsResponse "List of transactions"
+// @Failure      500 {string} string "Error while fetching transactions"
+// @Router       /transaction/list [get]
+func (h *Handler) ListTransactions(ctx *gin.Context) {
+	req := &pb.ListTransactionsRequest{}
+
+	res, err := h.Transaction.ListTransactions(ctx, req)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, res)
+}
