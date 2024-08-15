@@ -25,8 +25,8 @@ func (s *AccountService) CreateAccount(ctx context.Context, req *pb.CreateAccoun
 	
 	return resp, err
 }
-
-func (s *AccountService) GetAccountById(ctx context.Context, req *pb.GetByIdAccauntRequest) (*pb.GetAccountByidResponse, error) {
+						 	
+func (s *AccountService) GetAccountByid(ctx context.Context, req *pb.GetByIdAccauntRequest) (*pb.GetAccountByidResponse, error) {
 	resp, err := s.stg.Account().GetAccountByid(ctx, req)
 	if err != nil {
 		log.Print(err)

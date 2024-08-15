@@ -26,7 +26,7 @@ func Connection() net.Listener {
 	s := grpc.NewServer()
 	pb.RegisterNotificationtServiceServer(s, notifications)
 	
-	brokers := []string{"localhost:9092"}
+	brokers := []string{"kafka:9092"}
 
 	kcm := kafka.NewKafkaConsumerManager()
 	appService := service.NewNotificationService(db)

@@ -24,8 +24,8 @@ services:
     networks:
       - mynetwork
       
-  game-service:
-    container_name: gameservice
+  budget-service:
+    container_name: budgetservice
     build: .
     ports:
       - "8087:8087"

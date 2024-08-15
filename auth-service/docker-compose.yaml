@@ -27,4 +27,8 @@ networks:
     external: true
     name: global-network
     driver: bridge
- 
+
+volumes:
+  db:
+  redis-data:
+    driver: local

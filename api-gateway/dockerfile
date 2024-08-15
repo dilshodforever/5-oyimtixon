@@ -11,8 +11,6 @@ RUN go mod download
 # Copy the rest of the application
 COPY . .
 
- 
-
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o myapp .
 
@@ -27,8 +25,6 @@ COPY --from=builder /app/myapp .
 COPY --from=builder /app/config/model.conf ./config/
 COPY --from=builder /app/config/policy.csv ./config/
 
-# Optionally copy the .env file if it's needed
-COPY --from=builder /app/.env .
 
 # Expose port 8080
 EXPOSE 8080

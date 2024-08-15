@@ -7,7 +7,7 @@ import (
 )
 
 func ConnectToKafka() kafka.KafkaProducer{
-	kaf, err := kafka.NewKafkaProducer([]string{"localhost:9092"})
+	kaf, err := kafka.NewKafkaProducer([]string{"kafka:9092"})
 	if err != nil {
 		log.Fatal("Error while connection kafka: ", err.Error())
 	}

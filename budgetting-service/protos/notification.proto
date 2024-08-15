@@ -12,6 +12,7 @@ service AccountService {
 
 message GetNotificationByidRequest {
     string user_id = 1;
+    string type =2;
 }
 
 message GetNotificationByidResponse{

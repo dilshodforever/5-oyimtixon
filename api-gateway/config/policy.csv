@@ -1,4 +1,37 @@
-p, unauthorized, /game/complete_level, POST
-p, unauthorized, /user/register, POST
-p, unauthorized, /game/start_level, POST
+p, user, /account/create, POST
+p, user, /account/get/:id, GET
+p, user, /account/update/:id, PUT
+p, user, /account/delete/:id, DELETE
+p, user, /account/list, GET
 
+p, user, /budget/create, POST
+p, user, /budget/get/:id, GET
+p, user, /budget/update/:id, PUT
+p, user, /budget/delete/:id, DELETE
+p, user, /budget/list, GET
+
+p, user, /category/create, POST
+p, user, /category/update/:id, PUT
+p, user, /category/delete/:id, DELETE
+p, user, /category/list, GET
+p, user, /category/get/:id, GET
+
+p, user, /goal/create, POST
+p, user, /goal/get/:id, GET
+p, user, /goal/update/:id, PUT
+p, user, /goal/delete/:id, DELETE
+p, user, /goal/list, GET
+
+p, user, /transaction/create, POST
+p, user, /transaction/get/:id, GET
+p, user, /transaction/update/:id, PUT
+p, user, /transaction/delete/:id, DELETE
+p, user, /transaction/list, GET
+
+p, user, /notifications/:id, GET
+p, user, /notifications/:id, DELETE
+p, user, /notifications/, GET
+
+p, user, /game/complete_level, POST
+p, user, /user/register, POST
+p, user, /game/start_level, POST

@@ -22,10 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ReportServiceClient interface {
-	GenerateSpendingReport(ctx context.Context, in *GenerateSpendingReportRequest, opts ...grpc.CallOption) (*GenerateSpendingReportResponse, error)
-	GenerateIncomeReport(ctx context.Context, in *GenerateIncomeReportRequest, opts ...grpc.CallOption) (*GenerateIncomeReportResponse, error)
-	GenerateBudgetPerformanceReport(ctx context.Context, in *GenerateBudgetPerformanceReportRequest, opts ...grpc.CallOption) (*GenerateBudgetPerformanceReportResponse, error)
-	GenerateGoalProgressReport(ctx context.Context, in *GenerateGoalProgressReportRequest, opts ...grpc.CallOption) (*GenerateGoalProgressReportResponse, error)
+	GenerateReport(ctx context.Context, in *GenerateReportRequest, opts ...grpc.CallOption) (*GenerateReportResponse, error)
 }
 
 type reportServiceClient struct {
@@ -36,36 +33,9 @@ func NewReportServiceClient(cc grpc.ClientConnInterface) ReportServiceClient {
 	return &reportServiceClient{cc}
 }
 
-func (c *reportServiceClient) GenerateSpendingReport(ctx context.Context, in *GenerateSpendingReportRequest, opts ...grpc.CallOption) (*GenerateSpendingReportResponse, error) {
-	out := new(GenerateSpendingReportResponse)
-	err := c.cc.Invoke(ctx, "/budgets.ReportService/GenerateSpendingReport", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *reportServiceClient) GenerateIncomeReport(ctx context.Context, in *GenerateIncomeReportRequest, opts ...grpc.CallOption) (*GenerateIncomeReportResponse, error) {
-	out := new(GenerateIncomeReportResponse)
-	err := c.cc.Invoke(ctx, "/budgets.ReportService/GenerateIncomeReport", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *reportServiceClient) GenerateBudgetPerformanceReport(ctx context.Context, in *GenerateBudgetPerformanceReportRequest, opts ...grpc.CallOption) (*GenerateBudgetPerformanceReportResponse, error) {
-	out := new(GenerateBudgetPerformanceReportResponse)
-	err := c.cc.Invoke(ctx, "/budgets.ReportService/GenerateBudgetPerformanceReport", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *reportServiceClient) GenerateGoalProgressReport(ctx context.Context, in *GenerateGoalProgressReportRequest, opts ...grpc.CallOption) (*GenerateGoalProgressReportResponse, error) {
-	out := new(GenerateGoalProgressReportResponse)
-	err := c.cc.Invoke(ctx, "/budgets.ReportService/GenerateGoalProgressReport", in, out, opts...)
+func (c *reportServiceClient) GenerateReport(ctx context.Context, in *GenerateReportRequest, opts ...grpc.CallOption) (*GenerateReportResponse, error) {
+	out := new(GenerateReportResponse)
+	err := c.cc.Invoke(ctx, "/reports.ReportService/GenerateReport", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,10 +46,7 @@ func (c *reportServiceClient) GenerateGoalProgressReport(ctx context.Context, in
 // All implementations must embed UnimplementedReportServiceServer
 // for forward compatibility
 type ReportServiceServer interface {
-	GenerateSpendingReport(context.Context, *GenerateSpendingReportRequest) (*GenerateSpendingReportResponse, error)
-	GenerateIncomeReport(context.Context, *GenerateIncomeReportRequest) (*GenerateIncomeReportResponse, error)
-	GenerateBudgetPerformanceReport(context.Context, *GenerateBudgetPerformanceReportRequest) (*GenerateBudgetPerformanceReportResponse, error)
-	GenerateGoalProgressReport(context.Context, *GenerateGoalProgressReportRequest) (*GenerateGoalProgressReportResponse, error)
+	GenerateReport(context.Context, *GenerateReportRequest) (*GenerateReportResponse, error)
 	mustEmbedUnimplementedReportServiceServer()
 }
 
@@ -87,17 +54,8 @@ type ReportServiceServer interface {
 type UnimplementedReportServiceServer struct {
 }
 
-func (UnimplementedReportServiceServer) GenerateSpendingReport(context.Context, *GenerateSpendingReportRequest) (*GenerateSpendingReportResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateSpendingReport not implemented")
-}
-func (UnimplementedReportServiceServer) GenerateIncomeReport(context.Context, *GenerateIncomeReportRequest) (*GenerateIncomeReportResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateIncomeReport not implemented")
-}
-func (UnimplementedReportServiceServer) GenerateBudgetPerformanceReport(context.Context, *GenerateBudgetPerformanceReportRequest) (*GenerateBudgetPerformanceReportResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateBudgetPerformanceReport not implemented")
-}
-func (UnimplementedReportServiceServer) GenerateGoalProgressReport(context.Context, *GenerateGoalProgressReportRequest) (*GenerateGoalProgressReportResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateGoalProgressReport not implemented")
+func (UnimplementedReportServiceServer) GenerateReport(context.Context, *GenerateReportRequest) (*GenerateReportResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateReport not implemented")
 }
 func (UnimplementedReportServiceServer) mustEmbedUnimplementedReportServiceServer() {}
 
@@ -112,74 +70,20 @@ func RegisterReportServiceServer(s grpc.ServiceRegistrar, srv ReportServiceServe
 	s.RegisterService(&ReportService_ServiceDesc, srv)
 }
 
-func _ReportService_GenerateSpendingReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateSpendingReportRequest)
+func _ReportService_GenerateReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateReportRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ReportServiceServer).GenerateSpendingReport(ctx, in)
+		return srv.(ReportServiceServer).GenerateReport(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/budgets.ReportService/GenerateSpendingReport",
+		FullMethod: "/reports.ReportService/GenerateReport",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReportServiceServer).GenerateSpendingReport(ctx, req.(*GenerateSpendingReportRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ReportService_GenerateIncomeReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateIncomeReportRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReportServiceServer).GenerateIncomeReport(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/budgets.ReportService/GenerateIncomeReport",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReportServiceServer).GenerateIncomeReport(ctx, req.(*GenerateIncomeReportRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ReportService_GenerateBudgetPerformanceReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateBudgetPerformanceReportRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReportServiceServer).GenerateBudgetPerformanceReport(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/budgets.ReportService/GenerateBudgetPerformanceReport",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReportServiceServer).GenerateBudgetPerformanceReport(ctx, req.(*GenerateBudgetPerformanceReportRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ReportService_GenerateGoalProgressReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateGoalProgressReportRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReportServiceServer).GenerateGoalProgressReport(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/budgets.ReportService/GenerateGoalProgressReport",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReportServiceServer).GenerateGoalProgressReport(ctx, req.(*GenerateGoalProgressReportRequest))
+		return srv.(ReportServiceServer).GenerateReport(ctx, req.(*GenerateReportRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -188,24 +92,12 @@ func _ReportService_GenerateGoalProgressReport_Handler(srv interface{}, ctx cont
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ReportService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "budgets.ReportService",
+	ServiceName: "reports.ReportService",
 	HandlerType: (*ReportServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GenerateSpendingReport",
-			Handler:    _ReportService_GenerateSpendingReport_Handler,
-		},
-		{
-			MethodName: "GenerateIncomeReport",
-			Handler:    _ReportService_GenerateIncomeReport_Handler,
-		},
-		{
-			MethodName: "GenerateBudgetPerformanceReport",
-			Handler:    _ReportService_GenerateBudgetPerformanceReport_Handler,
-		},
-		{
-			MethodName: "GenerateGoalProgressReport",
-			Handler:    _ReportService_GenerateGoalProgressReport_Handler,
+			MethodName: "GenerateReport",
+			Handler:    _ReportService_GenerateReport_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -26,8 +26,6 @@ RUN apk add --no-cache ca-certificates
 # Copy the compiled binary from the builder stage
 COPY --from=builder /app/myapp .
 
-# Optionally copy the .env file if it's needed
-COPY --from=builder /app/.env .
 
 # Expose the application port
 EXPOSE 8087

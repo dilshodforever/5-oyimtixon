@@ -376,7 +376,7 @@ paths:
       summary: Delete Account
       tags:
       - Account
-  /account/get:
+  /account/get/{id}:
     get:
       consumes:
       - application/json
@@ -1081,7 +1081,32 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get a list of all transactions
+      description: Get a list of all transactions based on query parameters
+      parameters:
+      - description: Account ID
+        in: query
+        name: account_id
+        type: string
+      - description: Category ID
+        in: query
+        name: category_id
+        type: string
+      - description: Amount
+        in: query
+        name: amount
+        type: number
+      - description: Transaction Type
+        in: query
+        name: type
+        type: string
+      - description: Description
+        in: query
+        name: description
+        type: string
+      - description: Transaction Date
+        in: query
+        name: date
+        type: string
       produces:
       - application/json
       responses:

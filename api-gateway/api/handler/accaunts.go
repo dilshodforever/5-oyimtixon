@@ -1,8 +1,14 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
+	"encoding/json"
+	"fmt"
+	"log/slog"
+	"time"
+
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/accaunts"
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 // CreateAccount handles creating a new account
@@ -44,7 +50,7 @@ func (h *Handler) CreateAccount(ctx *gin.Context) {
 // @Success      200 {object} pb.GetAccountByidResponse "Account details"
 // @Failure      400 {string} string "Missing or invalid ID"
 // @Failure      500 {string} string "Error while fetching account"
-// @Router       /account/get [get]
+// @Router       /account/get/{id} [get]
 func (h *Handler) GetAccountById(ctx *gin.Context) {
 	id := ctx.Query("id")
 	if id == "" {
@@ -54,14 +60,53 @@ func (h *Handler) GetAccountById(ctx *gin.Context) {
 
 	req := &pb.GetByIdAccauntRequest{Id: id}
 
-	res, err := h.Account.GetAccountByid(ctx, req)
-	if err != nil {
+	// Try to get the account data from Redis
+	cacheKey := "user_id:" + req.Id
+	cachedData, err := h.Redis.Get(cacheKey)
+	if err != nil && err != redis.Nil {
+		slog.Error("Failed to get data from Redis: %v", err)
+	}
+
+	var res *pb.GetAccountByidResponse
+
+	if err == nil {
+		// Data found in Redis, unmarshal it
+		fmt.Println("redis")
+		if err := json.Unmarshal([]byte(cachedData), &res); err != nil {
+			ctx.JSON(500, gin.H{"error": "Failed to parse cached data"})
+			return
+		}
+	} else if err == redis.Nil {
+		// Data not found in Redis, fetch it from the service
+		fmt.Println("mongo")
+		res, err = h.Account.GetAccountByid(ctx, req)
+		if err != nil {
+			ctx.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+
+		data, err := json.Marshal(res)
+		if err != nil {
+			slog.Error("Failed to marshal response: %v", err)
+		} else {
+			// Convert the byte array to a string
+			dataStr := string(data)
+
+			// Store the data in Redis with a 30-minute expiration
+			err := h.Redis.Set(cacheKey, dataStr, 30*time.Minute)
+			if err != nil {
+				slog.Error("Failed to set data in Redis: %v", err)
+			}
+		}
+	} else {
+		// Handle other possible errors
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
 	ctx.JSON(200, res)
 }
+
 
 // UpdateAccount handles updating an account
 // @Summary      Update Account

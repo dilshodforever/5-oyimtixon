@@ -35,7 +35,6 @@ func (s *AccountService) CreateNotification(req model.Send) error {
 	return nil
 }
 
-// GetAccountByid retrieves a notification by user_id
 func (s *AccountService) GetNotification(req *pb.GetNotificationByidRequest) (*pb.GetNotificationByidResponse, error) {
 	coll := s.db.Collection("notifications")
 	var notification model.Send
@@ -79,7 +78,6 @@ func (s *AccountService) DeleteNotification(req *pb.GetNotificationByidRequest) 
 	}, nil
 }
 
-// ListAccounts lists all notifications
 func (s *AccountService) ListNotification(req *pb.Void) (*pb.ListNotificationResponse, error) {
 	coll := s.db.Collection("notifications")
 	cursor, err := coll.Find(ctx.Background(), bson.M{})

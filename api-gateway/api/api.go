@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/dilshodforever/5-oyimtixon/api/handler"
+	"github.com/dilshodforever/5-oyimtixon/api/middleware"
 	_ "github.com/dilshodforever/5-oyimtixon/docs"
 
 	files "github.com/swaggo/files"
@@ -33,7 +34,7 @@ func NewGin(h *handler.Handler) *gin.Engine {
 		panic(err)
 	}
 	router := r.Group("/")
-
+	router.Use(middleware.NewAuth(ca))
 	// Swagger documentation
 	url := ginSwagger.URL("swagger/doc.json")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(files.Handler, url))
@@ -89,11 +90,11 @@ func NewGin(h *handler.Handler) *gin.Engine {
 	}
 
 	notif := router.Group("/notifications")
-{
-	notif.GET("/:id", h.GetNotification)
-	notif.DELETE("/:id", h.DeleteNotification)
-	notif.GET("/", h.ListNotification)
-}
+	{
+		notif.GET("/:id", h.GetNotification)
+		notif.DELETE("/:id", h.DeleteNotification)
+		notif.GET("/", h.ListNotification)
+	}
 
 	return r
 }

@@ -1,8 +1,8 @@
 version: '3.9'
 
 services:
-  game-service:
-    container_name: gameservice
+  notification-service:
+    container_name: notification
     build: .
     ports:
       - "8089:8089"

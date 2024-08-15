@@ -16,6 +16,7 @@ type Handler struct {
     Goal      pbg.GoalServiceClient
     Transaction pbt.TransactionServiceClient
     Notification pbn.NotificationtServiceClient
+    Redis InMemoryStorageI
 }
 
 func NewHandler(
@@ -25,6 +26,7 @@ func NewHandler(
     goal pbg.GoalServiceClient,
     transaction pbt.TransactionServiceClient,
     notification pbn.NotificationtServiceClient,
+    redis InMemoryStorageI,
 
 ) *Handler {
 	return &Handler{
@@ -34,5 +36,6 @@ func NewHandler(
         Goal:      goal,
         Transaction: transaction,
         Notification: notification,
+        Redis: redis,
 	}
 }

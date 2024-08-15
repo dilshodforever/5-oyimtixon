@@ -115,7 +115,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/account/get": {
+        "/account/get/{id}": {
             "get": {
                 "security": [
                     {
@@ -1237,7 +1237,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get a list of all transactions",
+                "description": "Get a list of all transactions based on query parameters",
                 "consumes": [
                     "application/json"
                 ],
@@ -1248,6 +1248,44 @@ const docTemplate = `{
                     "Transaction"
                 ],
                 "summary": "List Transactions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "account_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Amount",
+                        "name": "amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Transaction Type",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Description",
+                        "name": "description",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Transaction Date",
+                        "name": "date",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of transactions",
