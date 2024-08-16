@@ -26,7 +26,10 @@ jobs:
           pwd
           ls
           cd ubuntu
-          cd 5-oyimtixon/api-gateway
+          cd 5-oyimtixon
+          git pull origin main
+          cd api-gateway
+          
           sudo docker compose down
           sudo docker compose up -d
           cd ..
