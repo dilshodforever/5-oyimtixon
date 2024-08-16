@@ -41,7 +41,7 @@ func (h *Handler) CreateTransaction(ctx *gin.Context) {
 			return err
 		}
 
-		ctx.JSON(200, res.Message)
+		ctx.JSON(200, res)
 		return nil
 	})
 
