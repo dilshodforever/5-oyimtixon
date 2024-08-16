@@ -23,7 +23,7 @@ var (
 // @Produce      json
 // @Security     BearerAuth
 // @Param        transaction body pb.CreateTransactionRequest true "Transaction details"
-// @Success      200 {object} pb.TransactionResponse "Transaction created successfully"
+// @Success      200 {object} string "Transaction created successfully"
 // @Failure      400 {string} string "Invalid input"
 // @Failure      500 {string} string "Error while creating transaction"
 // @Router       /transaction/create [post]
@@ -36,12 +36,12 @@ func (h *Handler) CreateTransaction(ctx *gin.Context) {
 	id := middleware.GetUserId(ctx)
 	req.UserId = id
 	err := transactionBreaker.Run(func() error {
-		res, err := kafkasender.CreateTransaction(h.Kafka, &req)
+		_, err := kafkasender.CreateTransaction(h.Kafka, &req)
 		if err != nil {
 			return err
 		}
 
-		ctx.JSON(200, res)
+		ctx.JSON(200, "Success")
 		return nil
 	})
 
