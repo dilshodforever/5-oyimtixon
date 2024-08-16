@@ -5,10 +5,11 @@ import (
 	"net"
 
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/accaunts"
-	goalsPb "github.com/dilshodforever/5-oyimtixon/genprotos/goals"
-	transactionsPb "github.com/dilshodforever/5-oyimtixon/genprotos/transactions"
 	budgetting "github.com/dilshodforever/5-oyimtixon/genprotos/budgets"
 	category "github.com/dilshodforever/5-oyimtixon/genprotos/categories"
+	goalsPb "github.com/dilshodforever/5-oyimtixon/genprotos/goals"
+	transactionsPb "github.com/dilshodforever/5-oyimtixon/genprotos/transactions"
+	kafkaconsumer "github.com/dilshodforever/5-oyimtixon/kafkaconsumer"
 	"github.com/dilshodforever/5-oyimtixon/service"
 	postgres "github.com/dilshodforever/5-oyimtixon/storage/mongo"
 	"google.golang.org/grpc"
@@ -34,8 +35,8 @@ func Connection() net.Listener {
 	accountService := service.NewAccountService(db)
 	goalService := service.NewGoalService(db)
 	transactionService := service.NewTransactionService(db)
-	budget:= service.NewBudgetService(db)
-	categories:=service.NewCategoryService(db)
+	budget := service.NewBudgetService(db)
+	categories := service.NewCategoryService(db)
 	// Register services with the gRPC server
 	pb.RegisterAccountServiceServer(s, accountService)
 	goalsPb.RegisterGoalServiceServer(s, goalService)
@@ -43,6 +44,20 @@ func Connection() net.Listener {
 	budgetting.RegisterBudgetServiceServer(s, budget)
 	category.RegisterCategoryServiceServer(s, categories)
 	// Start serving
+
+	brokers := []string{"kafka:9092"}
+
+	kcm := kafkaconsumer.NewKafkaConsumerManager()
+
+	if err := kcm.RegisterConsumer(brokers, "update", "root", kafkaconsumer.UpdateBudget(budget)); err != nil {
+		if err == kafkaconsumer.ErrConsumerAlreadyExists {
+			log.Printf("Consumer for topic 'create-job_application' already exists")
+		} else {
+			log.Fatalf("Error registering consumer: %v", err)
+		}
+	}
+
+
 	log.Printf("Server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)

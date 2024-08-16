@@ -5,6 +5,7 @@ import (
 
 	"github.com/dilshodforever/5-oyimtixon/api/middleware"
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/budgets"
+	"github.com/dilshodforever/5-oyimtixon/kafkasender"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,6 +27,7 @@ func (h *Handler) CreateBudget(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
+
 	id := middleware.GetUserId(ctx)
 	req.UserId=id
 	res, err := h.Budget.CreateBudget(ctx, &req)
@@ -84,13 +86,13 @@ func (h *Handler) UpdateBudget(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
-	res, err := h.Budget.UpdateBudget(ctx, &req)
+	res, err := kafkasender.UpdateBudget(h.Kafka, &req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(200, res)
+	ctx.JSON(200, res.Message)
 }
 
 // DeleteBudget handles deleting a budget

@@ -12,7 +12,8 @@ import (
 	pbg "github.com/dilshodforever/5-oyimtixon/genprotos/goals"
 	pbn "github.com/dilshodforever/5-oyimtixon/genprotos/notifications"
 	pbt "github.com/dilshodforever/5-oyimtixon/genprotos/transactions"
-	
+	"github.com/dilshodforever/5-oyimtixon/kafkaconnect"
+
 	"github.com/go-redis/redis/v8"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -35,7 +36,8 @@ func main() {
 	})
 
 	// Create service clients
-	redis:=handler.NewInMemoryStorage(rdb)
+	kafka:=kafkaconnect.ConnectToKafka()
+	redis := handler.NewInMemoryStorage(rdb)
 	account := pba.NewAccountServiceClient(BudgetConn)
 	budget := pbb.NewBudgetServiceClient(BudgetConn)
 	category := pbc.NewCategoryServiceClient(BudgetConn)
@@ -43,7 +45,7 @@ func main() {
 	transaction := pbt.NewTransactionServiceClient(BudgetConn)
 	notifications := pbn.NewNotificationtServiceClient(Notifications)
 	// Create a new handler with the service clients
-	h := handler.NewHandler(account, budget, category, goal, transaction, notifications, redis)
+	h := handler.NewHandler(account, budget, category, goal, transaction, notifications, redis, kafka)
 	r := api.NewGin(h)
 	fmt.Println("Server started on port:8080")
 	err = r.Run(":8080")

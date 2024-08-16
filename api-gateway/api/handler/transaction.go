@@ -6,6 +6,7 @@ import (
 
 	"github.com/dilshodforever/5-oyimtixon/api/middleware"
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/transactions"
+	"github.com/dilshodforever/5-oyimtixon/kafkasender"
 	"github.com/eapache/go-resiliency/breaker"
 	"github.com/gin-gonic/gin"
 )
@@ -32,18 +33,18 @@ func (h *Handler) CreateTransaction(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
-	id:=middleware.GetUserId(ctx)
-	req.UserId=id
+	id := middleware.GetUserId(ctx)
+	req.UserId = id
 	err := transactionBreaker.Run(func() error {
-		res, err := h.Transaction.CreateTransaction(ctx, &req)
+		res, err := kafkasender.CreateTransaction(h.Kafka, &req)
 		if err != nil {
 			return err
 		}
 
-		ctx.JSON(200, res)
+		ctx.JSON(200, res.Message)
 		return nil
 	})
-	
+
 	if err != nil {
 		if err == breaker.ErrBreakerOpen {
 			ctx.JSON(500, gin.H{"error": "Service is temporarily unavailable. Please try again later."})
