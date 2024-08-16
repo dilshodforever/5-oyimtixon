@@ -44,7 +44,8 @@ jobs:
           cd notification
           sudo docker compose down
           sudo docker compose up --build -d
-
+          cd ..
+          
           cd api-gateway
           sudo docker compose down
           sudo docker compose up --build -d
