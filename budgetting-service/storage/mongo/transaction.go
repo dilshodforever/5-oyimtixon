@@ -23,6 +23,7 @@ func (s *AccountService) CreateTransaction(ctx context.Context, req *transaction
 		"description": req.Description,
 		"date":        req.Date,
 	})
+	//
 	if err != nil {
 		log.Printf("Failed to create transaction: %v", err)
 		return &transactions.TransactionResponse{Success: false, Message: "Failed to create transaction"}, err
