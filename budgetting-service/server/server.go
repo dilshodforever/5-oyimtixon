@@ -56,6 +56,14 @@ func Connection() net.Listener {
 			log.Fatalf("Error registering consumer: %v", err)
 		}
 	}
+	
+	if err := kcm.RegisterConsumer(brokers, "CreateTransaction", "root", kafkaconsumer.CreateAccaunt(transactionService)); err != nil {
+		if err == kafkaconsumer.ErrConsumerAlreadyExists {
+			log.Printf("Consumer for topic 'create-job_application' already exists")
+		} else {
+			log.Fatalf("Error registering consumer: %v", err)
+		}
+	}
 
 
 	log.Printf("Server listening at %v", lis.Addr())
