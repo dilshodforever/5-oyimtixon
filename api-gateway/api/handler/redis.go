@@ -10,7 +10,6 @@ import (
 type InMemoryStorageI interface {
 	Set(key, value string, exp time.Duration) error
 	Get(key string) (string, error)
-	SaveEmailCode(email, code string, exp time.Duration)error
 }
 
 type storageRedis struct {
@@ -42,8 +41,3 @@ func (r *storageRedis) Get(key string) (string, error) {
 	return val, nil
 }
 
-// SaveEmailCode stores an email verification code in Redis with expiration.
-func (r *storageRedis) SaveEmailCode(email, code string, exp time.Duration) error {
-	key := "email_code:" + email
-	return r.Set(key, code, exp)
-}

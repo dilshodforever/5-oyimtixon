@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dilshodforever/5-oyimtixon/api/middleware"
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/transactions"
 	"github.com/eapache/go-resiliency/breaker"
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,8 @@ func (h *Handler) CreateTransaction(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
-
+	id:=middleware.GetUserId(ctx)
+	req.UserId=id
 	err := transactionBreaker.Run(func() error {
 		res, err := h.Transaction.CreateTransaction(ctx, &req)
 		if err != nil {
@@ -59,13 +61,13 @@ func (h *Handler) CreateTransaction(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id query string true "Transaction ID"
+// @Param        id path string true "Transaction ID"
 // @Success      200 {object} pb.GetTransactionResponse "Transaction details"
 // @Failure      400 {string} string "Missing or invalid ID"
 // @Failure      500 {string} string "Error while fetching transaction"
-// @Router       /transaction/get [get]
+// @Router       /transaction/get/{id} [get]
 func (h *Handler) GetTransaction(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, gin.H{"error": "Missing or invalid ID"})
 		return
@@ -117,13 +119,13 @@ func (h *Handler) UpdateTransaction(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id query string true "Transaction ID"
+// @Param        id path string true "Transaction ID"
 // @Success      200 {object} pb.TransactionResponse "Transaction deleted successfully"
 // @Failure      400 {string} string "Missing or invalid ID"
 // @Failure      500 {string} string "Error while deleting transaction"
-// @Router       /transaction/delete [delete]
+// @Router       /transaction/delete/{id} [delete]
 func (h *Handler) DeleteTransaction(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, gin.H{"error": "Missing or invalid ID"})
 		return

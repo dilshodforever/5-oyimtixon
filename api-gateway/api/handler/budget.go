@@ -1,8 +1,11 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
+	"strconv"
+
+	"github.com/dilshodforever/5-oyimtixon/api/middleware"
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/budgets"
+	"github.com/gin-gonic/gin"
 )
 
 // CreateBudget handles creating a new budget
@@ -23,13 +26,13 @@ func (h *Handler) CreateBudget(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
-
+	id := middleware.GetUserId(ctx)
+	req.UserId=id
 	res, err := h.Budget.CreateBudget(ctx, &req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
 	ctx.JSON(200, res)
 }
 
@@ -40,11 +43,11 @@ func (h *Handler) CreateBudget(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id query string true "Budget ID"
+// @Param        id path string true "Budget ID"
 // @Success      200 {object} pb.GetBudgetByidResponse "Budget details"
 // @Failure      400 {string} string "Missing or invalid ID"
 // @Failure      500 {string} string "Error while fetching budget"
-// @Router       /budget/get [get]
+// @Router       /budget/get/{id} [get]
 func (h *Handler) GetBudgetByid(ctx *gin.Context) {
 	id := ctx.Query("id")
 	if id == "" {
@@ -81,7 +84,6 @@ func (h *Handler) UpdateBudget(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
-
 	res, err := h.Budget.UpdateBudget(ctx, &req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -98,13 +100,13 @@ func (h *Handler) UpdateBudget(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id query string true "Budget ID"
+// @Param        id path string true "Budget ID"
 // @Success      200 {object} pb.BudgetResponse "Budget deleted successfully"
 // @Failure      400 {string} string "Missing or invalid ID"
 // @Failure      500 {string} string "Error while deleting budget"
-// @Router       /budget/delete [delete]
+// @Router       /budget/delete/{id} [delete]
 func (h *Handler) DeleteBudget(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, gin.H{"error": "Missing or invalid ID"})
 		return
@@ -123,16 +125,34 @@ func (h *Handler) DeleteBudget(ctx *gin.Context) {
 
 // ListBudgets handles listing all budgets
 // @Summary      List Budgets
-// @Description  Get a list of all budgets
+// @Description  Get a list of all budgets based on the provided query parameters
 // @Tags         Budget
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Success      200 {object} pb.ListBudgetsResponse "List of budgets"
-// @Failure      500 {string} string "Error while fetching budgets"
+// @Param        user_id    query     string  false  "User ID"  example("user123")
+// @Param        category_id query    string  false  "Category ID"  example("category456")
+// @Param        amount     query     number   false  "Amount"  example(1500.75)
+// @Param        period     query     string  false  "Period"  example("monthly")
+// @Param        start_date query     string  false  "Start date (YYYY-MM-DD)"  example("2024-01-01")
+// @Param        end_date   query     string  false  "End date (YYYY-MM-DD)"  example("2024-12-31")
+// @Success      200       {object}  pb.ListBudgetsResponse "List of budgets"
+// @Failure      500       {string}  string                 "Error while fetching budgets"
 // @Router       /budget/list [get]
 func (h *Handler) ListBudgets(ctx *gin.Context) {
-	req := &pb.ListBudgetsRequest{}
+	req := &pb.ListBudgetsRequest{
+		UserId:     ctx.Query("user_id"),
+		CategoryId: ctx.Query("category_id"),
+		Period:     ctx.Query("period"),
+		StartDate:  ctx.Query("start_date"),
+		EndDate:    ctx.Query("end_date"),
+	}
+
+	if amountStr := ctx.Query("amount"); amountStr != "" {
+		if amount, err := strconv.ParseFloat(amountStr, 32); err == nil {
+			req.Amount = float32(amount)
+		}
+	}
 
 	res, err := h.Budget.ListBudgets(ctx, req)
 	if err != nil {

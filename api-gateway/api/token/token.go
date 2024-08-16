@@ -21,14 +21,14 @@ type Tokens struct {
 	RefreshToken string
 }
 
-func ExtractClaim(cfg *config.Config, tokenStr string) (jwt.MapClaims, error) {
+func ExtractClaim(tokenStr string) (jwt.MapClaims, error) {
 	var (
 		token *jwt.Token
 		err   error
 	)
 
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		return []byte(cfg.TokenKey), nil
+		return []byte(config.Load().TokenKey), nil
 	}
 	token, err = jwt.Parse(tokenStr, keyFunc)
 	if err != nil {

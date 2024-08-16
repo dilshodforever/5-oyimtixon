@@ -96,9 +96,6 @@ func (s *AccountService) DeleteAccount(ctx context.Context, req *pb.DeleteAccoun
 func (s *AccountService) ListAccounts(ctx context.Context, req *pb.ListAccountsRequest) (*pb.ListAccountsResponse, error) {
 	coll := s.db.Collection("accounts")
 	filter := bson.M{}
-	if req.UserId != "" {
-		filter["UserId"] = req.UserId
-	}
 	if req.Name != "" {
 		filter["name"] = req.Name
 	}

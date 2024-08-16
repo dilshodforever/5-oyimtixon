@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/dilshodforever/5-oyimtixon/api/middleware"
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/categories"
+	"github.com/gin-gonic/gin"
 )
 
 // CreateCategory handles creating a new category
@@ -23,7 +24,8 @@ func (h *Handler) CreateCategory(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
-
+	id := middleware.GetUserId(ctx)
+	req.UserId=id
 	res, err := h.Category.CreateCategory(ctx, &req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -68,13 +70,13 @@ func (h *Handler) UpdateCategory(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id query string true "Category ID"
+// @Param        id path string true "Category ID"
 // @Success      200 {object} pb.CategoryResponse "Category deleted successfully"
 // @Failure      400 {string} string "Missing or invalid ID"
 // @Failure      500 {string} string "Error while deleting category"
-// @Router       /category/delete [delete]
+// @Router       /category/delete/{id} [delete]
 func (h *Handler) DeleteCategory(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, gin.H{"error": "Missing or invalid ID"})
 		return
@@ -93,16 +95,23 @@ func (h *Handler) DeleteCategory(ctx *gin.Context) {
 
 // ListCategories handles listing all categories
 // @Summary      List Categories
-// @Description  Get a list of all categories
+// @Description  Get a list of all categories based on the provided query parameters
 // @Tags         Category
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Success      200 {object} pb.ListCategoriesResponse "List of categories"
-// @Failure      500 {string} string "Error while fetching categories"
+// @Param        user_id  query     string  false  "User ID"  example("user123")
+// @Param        name     query     string  false  "Name of the category"  example("Groceries")
+// @Param        type     query     string  false  "Type of the category"  example("Expense")
+// @Success      200      {object}  pb.ListCategoriesResponse "List of categories"
+// @Failure      500      {string}  string                  "Error while fetching categories"
 // @Router       /category/list [get]
 func (h *Handler) ListCategories(ctx *gin.Context) {
-	req := &pb.ListCategoriesRequest{}
+	req := &pb.ListCategoriesRequest{
+		UserId: ctx.Query("user_id"),
+		Name:   ctx.Query("name"),
+		Type:   ctx.Query("type"),
+	}
 
 	res, err := h.Category.ListCategories(ctx, req)
 	if err != nil {
@@ -120,13 +129,13 @@ func (h *Handler) ListCategories(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id query string true "Category ID"
+// @Param        id path string true "Category ID"
 // @Success      200 {object} pb.GetByidCategoriesResponse "Category details"
 // @Failure      400 {string} string "Missing or invalid ID"
 // @Failure      500 {string} string "Error while fetching category"
-// @Router       /category/get [get]
+// @Router       /category/get/{id} [get]
 func (h *Handler) GetByidCategory(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, gin.H{"error": "Missing or invalid ID"})
 		return

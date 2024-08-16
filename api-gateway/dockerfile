@@ -1,11 +1,10 @@
 # Stage 1: Build stage
-FROM golang:1.22.1 AS builder
+FROM golang:1.22 AS builder
 
 WORKDIR /app
 
 # Copy and download dependencies
-COPY go.mod .
-COPY go.sum .
+COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the rest of the application
@@ -21,10 +20,10 @@ WORKDIR /app
 
 # Copy the compiled binary from the builder stage
 COPY --from=builder /app/myapp .
+
 # Copy the configuration files
 COPY --from=builder /app/config/model.conf ./config/
 COPY --from=builder /app/config/policy.csv ./config/
-
 
 # Expose port 8080
 EXPOSE 8080

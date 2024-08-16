@@ -350,12 +350,6 @@ paths:
       consumes:
       - application/json
       description: Delete an account by ID
-      parameters:
-      - description: Account ID
-        in: query
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -411,7 +405,28 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get a list of all accounts
+      description: Get a list of all accounts based on the provided query parameters
+      parameters:
+      - description: Name of the account
+        example: '"Savings"'
+        in: query
+        name: name
+        type: string
+      - description: Type of the account
+        example: '"Checking"'
+        in: query
+        name: type
+        type: string
+      - description: Balance of the account
+        example: 1000.5
+        in: query
+        name: balance
+        type: number
+      - description: Currency of the account
+        example: '"USD"'
+        in: query
+        name: currency
+        type: string
       produces:
       - application/json
       responses:
@@ -492,14 +507,14 @@ paths:
       summary: Create Budget
       tags:
       - Budget
-  /budget/delete:
+  /budget/delete/{id}:
     delete:
       consumes:
       - application/json
       description: Delete a budget by ID
       parameters:
       - description: Budget ID
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -523,14 +538,14 @@ paths:
       summary: Delete Budget
       tags:
       - Budget
-  /budget/get:
+  /budget/get/{id}:
     get:
       consumes:
       - application/json
       description: Get details of a budget by ID
       parameters:
       - description: Budget ID
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -558,7 +573,38 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get a list of all budgets
+      description: Get a list of all budgets based on the provided query parameters
+      parameters:
+      - description: User ID
+        example: '"user123"'
+        in: query
+        name: user_id
+        type: string
+      - description: Category ID
+        example: '"category456"'
+        in: query
+        name: category_id
+        type: string
+      - description: Amount
+        example: 1500.75
+        in: query
+        name: amount
+        type: number
+      - description: Period
+        example: '"monthly"'
+        in: query
+        name: period
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        example: '"2024-01-01"'
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        example: '"2024-12-31"'
+        in: query
+        name: end_date
+        type: string
       produces:
       - application/json
       responses:
@@ -639,14 +685,14 @@ paths:
       summary: Create Category
       tags:
       - Category
-  /category/delete:
+  /category/delete/{id}:
     delete:
       consumes:
       - application/json
       description: Delete a category by ID
       parameters:
       - description: Category ID
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -670,14 +716,14 @@ paths:
       summary: Delete Category
       tags:
       - Category
-  /category/get:
+  /category/get/{id}:
     get:
       consumes:
       - application/json
       description: Get details of a category by ID
       parameters:
       - description: Category ID
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -705,7 +751,23 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get a list of all categories
+      description: Get a list of all categories based on the provided query parameters
+      parameters:
+      - description: User ID
+        example: '"user123"'
+        in: query
+        name: user_id
+        type: string
+      - description: Name of the category
+        example: '"Groceries"'
+        in: query
+        name: name
+        type: string
+      - description: Type of the category
+        example: '"Expense"'
+        in: query
+        name: type
+        type: string
       produces:
       - application/json
       responses:
@@ -786,14 +848,14 @@ paths:
       summary: Create Goal
       tags:
       - Goal
-  /goal/delete:
+  /goal/delete/{id}:
     delete:
       consumes:
       - application/json
       description: Delete a goal by ID
       parameters:
       - description: Goal ID
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -817,14 +879,14 @@ paths:
       summary: Delete Goal
       tags:
       - Goal
-  /goal/get:
+  /goal/get/{id}:
     get:
       consumes:
       - application/json
       description: Retrieve details of a goal by ID
       parameters:
       - description: Goal ID
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -852,7 +914,38 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get a list of all goals
+      description: Get a list of all goals based on the provided query parameters
+      parameters:
+      - description: User ID
+        example: '"user123"'
+        in: query
+        name: user_id
+        type: string
+      - description: Name of the goal
+        example: '"Save for vacation"'
+        in: query
+        name: name
+        type: string
+      - description: Target amount
+        example: 5000
+        in: query
+        name: target_amount
+        type: number
+      - description: Current amount
+        example: 1500
+        in: query
+        name: current_amount
+        type: number
+      - description: Deadline (YYYY-MM-DD)
+        example: '"2024-12-31"'
+        in: query
+        name: deadline
+        type: string
+      - description: Status of the goal
+        example: '"In Progress"'
+        in: query
+        name: status
+        type: string
       produces:
       - application/json
       responses:
@@ -901,17 +994,11 @@ paths:
       summary: Update Goal
       tags:
       - Goal
-  /notification/{id}:
+  /notifications/delete:
     delete:
       consumes:
       - application/json
       description: Delete a notification by user_id
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -932,16 +1019,11 @@ paths:
       summary: Delete Notification
       tags:
       - Notification
+  /notifications/get:
     get:
       consumes:
       - application/json
       description: Retrieve a notification by user_id
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -962,7 +1044,7 @@ paths:
       summary: Get Notification
       tags:
       - Notification
-  /notifications:
+  /notifications/getlist:
     get:
       consumes:
       - application/json
@@ -1015,14 +1097,14 @@ paths:
       summary: Create Transaction
       tags:
       - Transaction
-  /transaction/delete:
+  /transaction/delete/{id}:
     delete:
       consumes:
       - application/json
       description: Delete a transaction by ID
       parameters:
       - description: Transaction ID
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -1046,14 +1128,14 @@ paths:
       summary: Delete Transaction
       tags:
       - Transaction
-  /transaction/get:
+  /transaction/get/{id}:
     get:
       consumes:
       - application/json
       description: Retrieve details of a transaction by ID
       parameters:
       - description: Transaction ID
-        in: query
+        in: path
         name: id
         required: true
         type: string

@@ -1,8 +1,11 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
+	"strconv"
+
+	"github.com/dilshodforever/5-oyimtixon/api/middleware"
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/goals"
+	"github.com/gin-gonic/gin"
 )
 
 // CreateGoal handles creating a new goal
@@ -23,7 +26,8 @@ func (h *Handler) CreateGoal(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
-
+	id:=middleware.GetUserId(ctx)
+	req.UserId=id
 	res, err := h.Goal.CreateGoal(ctx, &req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -40,13 +44,13 @@ func (h *Handler) CreateGoal(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id query string true "Goal ID"
+// @Param        id path string true "Goal ID"
 // @Success      200 {object} pb.GetGoalResponse "Goal details"
 // @Failure      400 {string} string "Missing or invalid ID"
 // @Failure      500 {string} string "Error while fetching goal"
-// @Router       /goal/get [get]
+// @Router       /goal/get/{id} [get]
 func (h *Handler) GetGoalByid(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, gin.H{"error": "Missing or invalid ID"})
 		return
@@ -98,11 +102,11 @@ func (h *Handler) UpdateGoal(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id query string true "Goal ID"
+// @Param        id path string true "Goal ID"
 // @Success      200 {object} pb.GoalResponse "Goal deleted successfully"
 // @Failure      400 {string} string "Missing or invalid ID"
 // @Failure      500 {string} string "Error while deleting goal"
-// @Router       /goal/delete [delete]
+// @Router       /goal/delete/{id} [delete]
 func (h *Handler) DeleteGoal(ctx *gin.Context) {
 	id := ctx.Query("id")
 	if id == "" {
@@ -123,16 +127,39 @@ func (h *Handler) DeleteGoal(ctx *gin.Context) {
 
 // ListGoals handles listing all goals
 // @Summary      List Goals
-// @Description  Get a list of all goals
+// @Description  Get a list of all goals based on the provided query parameters
 // @Tags         Goal
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Success      200 {object} pb.ListGoalsResponse "List of goals"
-// @Failure      500 {string} string "Error while fetching goals"
+// @Param        user_id        query     string  false  "User ID"  example("user123")
+// @Param        name           query     string  false  "Name of the goal"  example("Save for vacation")
+// @Param        target_amount  query     number   false  "Target amount"  example(5000.00)
+// @Param        current_amount query     number   false  "Current amount"  example(1500.00)
+// @Param        deadline       query     string  false  "Deadline (YYYY-MM-DD)"  example("2024-12-31")
+// @Param        status         query     string  false  "Status of the goal"  example("In Progress")
+// @Success      200            {object}  pb.ListGoalsResponse "List of goals"
+// @Failure      500            {string}  string                  "Error while fetching goals"
 // @Router       /goal/list [get]
 func (h *Handler) ListGoals(ctx *gin.Context) {
-	req := &pb.ListGoalsRequest{}
+	req := &pb.ListGoalsRequest{
+		UserId:   ctx.Query("user_id"),
+		Name:     ctx.Query("name"),
+		Status:   ctx.Query("status"),
+		Deadline: ctx.Query("deadline"),
+	}
+
+	// Convert target_amount and current_amount from string to float32
+	if targetAmountStr := ctx.Query("target_amount"); targetAmountStr != "" {
+		if targetAmount, err := strconv.ParseFloat(targetAmountStr, 32); err == nil {
+			req.TargetAmount = float32(targetAmount)
+		}
+	}
+	if currentAmountStr := ctx.Query("current_amount"); currentAmountStr != "" {
+		if currentAmount, err := strconv.ParseFloat(currentAmountStr, 32); err == nil {
+			req.CurrentAmount = float32(currentAmount)
+		}
+	}
 
 	res, err := h.Goal.ListGoals(ctx, req)
 	if err != nil {

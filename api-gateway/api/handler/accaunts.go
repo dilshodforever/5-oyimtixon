@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"strconv"
 	"time"
 
+	"github.com/dilshodforever/5-oyimtixon/api/middleware"
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/accaunts"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
@@ -29,7 +31,8 @@ func (h *Handler) CreateAccount(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
-
+	id := middleware.GetUserId(ctx)
+	req.UserId = id
 	res, err := h.Account.CreateAccount(ctx, &req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -99,14 +102,12 @@ func (h *Handler) GetAccountById(ctx *gin.Context) {
 			}
 		}
 	} else {
-		// Handle other possible errors
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
 	ctx.JSON(200, res)
 }
-
 
 // UpdateAccount handles updating an account
 // @Summary      Update Account
@@ -126,7 +127,8 @@ func (h *Handler) UpdateAccount(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
-
+	id := middleware.GetUserId(ctx)
+	req.Id = id
 	res, err := h.Account.UpdateAccount(ctx, &req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -143,20 +145,13 @@ func (h *Handler) UpdateAccount(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id query string true "Account ID"
 // @Success      200 {object} pb.UpdateAccountResponse "Account deleted successfully"
 // @Failure      400 {string} string "Missing or invalid ID"
 // @Failure      500 {string} string "Error while deleting account"
 // @Router       /account/delete [delete]
 func (h *Handler) DeleteAccount(ctx *gin.Context) {
-	id := ctx.Query("id")
-	if id == "" {
-		ctx.JSON(400, gin.H{"error": "Missing or invalid ID"})
-		return
-	}
-
+	id := middleware.GetUserId(ctx)
 	req := &pb.DeleteAccountRequest{Id: id}
-
 	res, err := h.Account.DeleteAccount(ctx, req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -168,16 +163,30 @@ func (h *Handler) DeleteAccount(ctx *gin.Context) {
 
 // ListAccounts handles listing all accounts
 // @Summary      List Accounts
-// @Description  Get a list of all accounts
+// @Description  Get a list of all accounts based on the provided query parameters
 // @Tags         Account
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Success      200 {object} pb.ListAccountsResponse "List of accounts"
-// @Failure      500 {string} string "Error while fetching accounts"
+// @Param        name     query     string  false  "Name of the account"  example("Savings")
+// @Param        type     query     string  false  "Type of the account"  example("Checking")
+// @Param        balance  query     number   false  "Balance of the account"  example(1000.50)
+// @Param        currency query     string  false  "Currency of the account"  example("USD")
+// @Success      200      {object}  pb.ListAccountsResponse "List of accounts"
+// @Failure      500      {string}  string                  "Error while fetching accounts"
 // @Router       /account/list [get]
 func (h *Handler) ListAccounts(ctx *gin.Context) {
-	req := &pb.ListAccountsRequest{}
+	req := &pb.ListAccountsRequest{
+		Name:     ctx.Query("name"),
+		Type:     ctx.Query("type"),
+		Currency: ctx.Query("currency"),
+	}
+	// Convert balance to float
+	if balanceStr := ctx.Query("balance"); balanceStr != "" {
+		if balance, err := strconv.ParseFloat(balanceStr, 32); err == nil {
+			req.Balance = float32(balance)
+		}
+	}
 
 	res, err := h.Account.ListAccounts(ctx, req)
 	if err != nil {

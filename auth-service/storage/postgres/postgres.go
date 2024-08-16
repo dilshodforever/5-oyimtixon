@@ -33,6 +33,7 @@ func NewPostgresStorage() (u.InitRoot, error) {
 	
 		return nil, err
 	}
+	fmt.Println("Connection to database!!!")
 	return &Storage{Db: db}, err
 
 }

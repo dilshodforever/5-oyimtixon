@@ -19,7 +19,6 @@ import (
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-
 func NewGin(h *handler.Handler) *gin.Engine {
 	r := gin.Default()
 
@@ -44,8 +43,8 @@ func NewGin(h *handler.Handler) *gin.Engine {
 	{
 		acc.POST("/create", h.CreateAccount)
 		acc.GET("/get/:id", h.GetAccountById)
-		acc.PUT("/update/:id", h.UpdateAccount)
-		acc.DELETE("/delete/:id", h.DeleteAccount)
+		acc.PUT("/update", h.UpdateAccount)
+		acc.DELETE("/delete", h.DeleteAccount)
 		acc.GET("/list", h.ListAccounts)
 	}
 
@@ -54,7 +53,7 @@ func NewGin(h *handler.Handler) *gin.Engine {
 	{
 		bud.POST("/create", h.CreateBudget)
 		bud.GET("/get/:id", h.GetBudgetByid)
-		bud.PUT("/update/:id", h.UpdateBudget)
+		bud.PUT("/update", h.UpdateBudget)
 		bud.DELETE("/delete/:id", h.DeleteBudget)
 		bud.GET("/list", h.ListBudgets)
 	}
@@ -63,7 +62,7 @@ func NewGin(h *handler.Handler) *gin.Engine {
 	cat := router.Group("/category")
 	{
 		cat.POST("/create", h.CreateCategory)
-		cat.PUT("/update/:id", h.UpdateCategory)
+		cat.PUT("/update", h.UpdateCategory)
 		cat.DELETE("/delete/:id", h.DeleteCategory)
 		cat.GET("/list", h.ListCategories)
 		cat.GET("/get/:id", h.GetByidCategory)
@@ -74,7 +73,7 @@ func NewGin(h *handler.Handler) *gin.Engine {
 	{
 		goa.POST("/create", h.CreateGoal)
 		goa.GET("/get/:id", h.GetGoalByid)
-		goa.PUT("/update/:id", h.UpdateGoal)
+		goa.PUT("/update", h.UpdateGoal)
 		goa.DELETE("/delete/:id", h.DeleteGoal)
 		goa.GET("/list", h.ListGoals)
 	}
@@ -84,16 +83,16 @@ func NewGin(h *handler.Handler) *gin.Engine {
 	{
 		trans.POST("/create", h.CreateTransaction)
 		trans.GET("/get/:id", h.GetTransaction)
-		trans.PUT("/update/:id", h.UpdateTransaction)
+		trans.PUT("/update", h.UpdateTransaction)
 		trans.DELETE("/delete/:id", h.DeleteTransaction)
 		trans.GET("/list", h.ListTransactions)
 	}
 
 	notif := router.Group("/notifications")
 	{
-		notif.GET("/:id", h.GetNotification)
-		notif.DELETE("/:id", h.DeleteNotification)
-		notif.GET("/", h.ListNotification)
+		notif.GET("/get", h.GetNotification)
+		notif.DELETE("/delete", h.DeleteNotification)
+		notif.GET("/getlist", h.ListNotification)
 	}
 
 	return r

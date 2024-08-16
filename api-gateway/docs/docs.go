@@ -84,15 +84,6 @@ const docTemplate = `{
                     "Account"
                 ],
                 "summary": "Delete Account",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Account ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Account deleted successfully",
@@ -171,7 +162,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get a list of all accounts",
+                "description": "Get a list of all accounts based on the provided query parameters",
                 "consumes": [
                     "application/json"
                 ],
@@ -182,6 +173,36 @@ const docTemplate = `{
                     "Account"
                 ],
                 "summary": "List Accounts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"Savings\"",
+                        "description": "Name of the account",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Checking\"",
+                        "description": "Type of the account",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "example": 1000.5,
+                        "description": "Balance of the account",
+                        "name": "balance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"USD\"",
+                        "description": "Currency of the account",
+                        "name": "currency",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of accounts",
@@ -300,7 +321,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/budget/delete": {
+        "/budget/delete/{id}": {
             "delete": {
                 "security": [
                     {
@@ -323,7 +344,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Budget ID",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -349,7 +370,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/budget/get": {
+        "/budget/get/{id}": {
             "get": {
                 "security": [
                     {
@@ -372,7 +393,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Budget ID",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -405,7 +426,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get a list of all budgets",
+                "description": "Get a list of all budgets based on the provided query parameters",
                 "consumes": [
                     "application/json"
                 ],
@@ -416,6 +437,50 @@ const docTemplate = `{
                     "Budget"
                 ],
                 "summary": "List Budgets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"user123\"",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"category456\"",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "example": 1500.75,
+                        "description": "Amount",
+                        "name": "amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"monthly\"",
+                        "description": "Period",
+                        "name": "period",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"2024-01-01\"",
+                        "description": "Start date (YYYY-MM-DD)",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"2024-12-31\"",
+                        "description": "End date (YYYY-MM-DD)",
+                        "name": "end_date",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of budgets",
@@ -534,7 +599,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/category/delete": {
+        "/category/delete/{id}": {
             "delete": {
                 "security": [
                     {
@@ -557,7 +622,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Category ID",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -583,7 +648,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/category/get": {
+        "/category/get/{id}": {
             "get": {
                 "security": [
                     {
@@ -606,7 +671,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Category ID",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -639,7 +704,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get a list of all categories",
+                "description": "Get a list of all categories based on the provided query parameters",
                 "consumes": [
                     "application/json"
                 ],
@@ -650,6 +715,29 @@ const docTemplate = `{
                     "Category"
                 ],
                 "summary": "List Categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"user123\"",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Groceries\"",
+                        "description": "Name of the category",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Expense\"",
+                        "description": "Type of the category",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of categories",
@@ -768,7 +856,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/goal/delete": {
+        "/goal/delete/{id}": {
             "delete": {
                 "security": [
                     {
@@ -791,7 +879,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Goal ID",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -817,7 +905,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/goal/get": {
+        "/goal/get/{id}": {
             "get": {
                 "security": [
                     {
@@ -840,7 +928,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Goal ID",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -873,7 +961,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get a list of all goals",
+                "description": "Get a list of all goals based on the provided query parameters",
                 "consumes": [
                     "application/json"
                 ],
@@ -884,6 +972,50 @@ const docTemplate = `{
                     "Goal"
                 ],
                 "summary": "List Goals",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"user123\"",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Save for vacation\"",
+                        "description": "Name of the goal",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "example": 5000,
+                        "description": "Target amount",
+                        "name": "target_amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "example": 1500,
+                        "description": "Current amount",
+                        "name": "current_amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"2024-12-31\"",
+                        "description": "Deadline (YYYY-MM-DD)",
+                        "name": "deadline",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"In Progress\"",
+                        "description": "Status of the goal",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of goals",
@@ -951,54 +1083,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/notification/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retrieve a notification by user_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notification"
-                ],
-                "summary": "Get Notification",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Notification retrieved successfully",
-                        "schema": {
-                            "$ref": "#/definitions/notifications.GetNotificationByidResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Notification not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Error while retrieving notification",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
+        "/notifications/delete": {
             "delete": {
                 "security": [
                     {
@@ -1016,15 +1101,6 @@ const docTemplate = `{
                     "Notification"
                 ],
                 "summary": "Delete Notification",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Notification deleted successfully",
@@ -1047,7 +1123,47 @@ const docTemplate = `{
                 }
             }
         },
-        "/notifications": {
+        "/notifications/get": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve a notification by user_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notification"
+                ],
+                "summary": "Get Notification",
+                "responses": {
+                    "200": {
+                        "description": "Notification retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/notifications.GetNotificationByidResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Notification not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Error while retrieving notification",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/getlist": {
             "get": {
                 "security": [
                     {
@@ -1132,7 +1248,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/transaction/delete": {
+        "/transaction/delete/{id}": {
             "delete": {
                 "security": [
                     {
@@ -1155,7 +1271,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Transaction ID",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -1181,7 +1297,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/transaction/get": {
+        "/transaction/get/{id}": {
             "get": {
                 "security": [
                     {
@@ -1204,7 +1320,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Transaction ID",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],

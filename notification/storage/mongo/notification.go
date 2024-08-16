@@ -38,7 +38,7 @@ func (s *AccountService) CreateNotification(req model.Send) error {
 func (s *AccountService) GetNotification(req *pb.GetNotificationByidRequest) (*pb.GetNotificationByidResponse, error) {
 	coll := s.db.Collection("notifications")
 	var notification model.Send
-	err := coll.FindOne(ctx.Background(), bson.M{"user_id": req.UserId}).Decode(&notification)
+	err := coll.FindOne(ctx.Background(), bson.M{"UserId": req.UserId}).Decode(&notification)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, fmt.Errorf("notification not found")
@@ -56,7 +56,7 @@ func (s *AccountService) GetNotification(req *pb.GetNotificationByidRequest) (*p
 // DeleteAccount deletes a notification by user_id
 func (s *AccountService) DeleteNotification(req *pb.GetNotificationByidRequest) (*pb.NotificationsResponse, error) {
 	coll := s.db.Collection("notifications")
-	res, err := coll.DeleteOne(ctx.Background(), bson.M{"user_id": req.UserId})
+	res, err := coll.DeleteOne(ctx.Background(), bson.M{"UserId": req.UserId})
 	if err != nil {
 		log.Printf("Failed to delete notification: %v", err)
 		return &pb.NotificationsResponse{

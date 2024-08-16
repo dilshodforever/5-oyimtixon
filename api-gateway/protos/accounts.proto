@@ -57,8 +57,6 @@ message DeleteAccountRequest {
 
 
 message ListAccountsRequest {
-    string id = 1;
-    string user_id = 2;
     string name = 3;
     string type = 4;  
     float balance = 5;
