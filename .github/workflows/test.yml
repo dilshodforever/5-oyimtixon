@@ -28,12 +28,8 @@ jobs:
           cd ubuntu
           cd 5-oyimtixon
           git pull origin main
-          cd api-gateway
-          
-          sudo docker compose down
-          sudo docker compose up --build -d
-          cd ..
 
+          
           cd auth-service
           sudo docker compose down
           sudo docker compose up --build -d
@@ -49,6 +45,10 @@ jobs:
           sudo docker compose down
           sudo docker compose up --build -d
 
+          cd api-gateway
+          sudo docker compose down
+          sudo docker compose up --build -d
+          cd ..
 
 
 
