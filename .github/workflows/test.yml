@@ -40,10 +40,11 @@ jobs:
           sudo docker compose down
           sudo docker compose up -d
           cd ..
+          ls
 
-          # cd 5-oyimtixon/notification
-          # sudo docker compose down
-          # sudo docker compose up -d
+          cd 5-oyimtixon/notification
+          sudo docker compose down
+          sudo docker compose up -d
 
 
 
