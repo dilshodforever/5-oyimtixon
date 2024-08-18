@@ -94,6 +94,6 @@ func NewGin(h *handler.Handler) *gin.Engine {
 		notif.DELETE("/delete", h.DeleteNotification)
 		notif.GET("/getlist", h.ListNotification)
 	}
-//
+
 	return r
 }
