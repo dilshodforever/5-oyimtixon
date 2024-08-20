@@ -38,7 +38,7 @@ func NewGin(h *handler.Handler) *gin.Engine {
 	url := ginSwagger.URL("swagger/doc.json")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(files.Handler, url))
 
-	
+	// Account endpoints
 	acc := router.Group("/account")
 	{
 		acc.POST("/create", h.CreateAccount)

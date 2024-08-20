@@ -28,7 +28,6 @@ jobs:
           cd ubuntu
           cd 5-oyimtixon
           git pull origin main
-
           
           cd auth-service
           sudo docker compose down
