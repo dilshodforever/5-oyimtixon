@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/dilshodforever/5-oyimtixon/api/token"
+	"github.com/go-redis/redis/v8"
 
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/auth"
 
@@ -79,7 +80,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 	}
 	tokens, err := h.Redis.Get("token:" + res.Id)
 	if err != nil {
-		if err.Error() == "redis: nil" {
+		if err == redis.Nil{
 			tokendata, err := h.Auth.UpdateToken(ctx, &pb.UpdateTokenRequest{Id: res.Id})
 			if err != nil {
 				log.Printf("Error getting tokendata %s: %v", res.Id, err)
