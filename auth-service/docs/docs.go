@@ -99,7 +99,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Login successful",
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginResponse"
+                            "type": "string"
                         }
                     },
                     "401": {
@@ -361,20 +361,6 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
-                }
-            }
-        },
-        "auth.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
                 }
             }
         },

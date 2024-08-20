@@ -14,6 +14,7 @@ type Auth interface {
 	Register(req *pbAuth.RegisterRequest) (*pbAuth.RegisterResponse, error)
 	Login(req *pbAuth.LoginRequest) (*pbAuth.LoginResponse, error)
 	ResetPassword(req *pbAuth.ResetPasswordRequest) (*pbAuth.ResetPasswordResponse, error)
+	UpdateToken(req *pbAuth.UpdateTokenRequest) (*pbAuth.RegisterResponse, error) 
 }
 
 type User interface {

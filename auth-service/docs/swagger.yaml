@@ -17,15 +17,6 @@ definitions:
       password:
         type: string
     type: object
-  auth.LoginResponse:
-    properties:
-      id:
-        type: string
-      message:
-        type: string
-      success:
-        type: boolean
-    type: object
   auth.Register:
     properties:
       email:
@@ -163,7 +154,7 @@ paths:
         "200":
           description: Login successful
           schema:
-            $ref: '#/definitions/auth.LoginResponse'
+            type: string
         "401":
           description: Unauthorized
           schema:

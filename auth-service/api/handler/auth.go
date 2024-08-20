@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/dilshodforever/5-oyimtixon/api/token"
-	"github.com/go-redis/redis"
 
 	pb "github.com/dilshodforever/5-oyimtixon/genprotos/auth"
 
@@ -44,6 +43,8 @@ func (h *Handler) Register(ctx *gin.Context) {
 	err = h.Redis.SaveToken(res.Id, tokens.RefreshToken, 30*24*time.Hour)
 	if err != nil {
 		slog.Info(err.Error())
+		ctx.JSON(400, err)
+		return
 	}
 	ctx.JSON(200, res)
 }
@@ -56,7 +57,7 @@ func (h *Handler) Register(ctx *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param Login body pb.LoginRequest true "Login user"
-// @Success 200 {object} pb.LoginResponse "Login successful"
+// @Success 200 {object} string "Login successful"
 // @Failure 401 {string} string "Unauthorized"
 // @Router /auth/login [post]
 func (h *Handler) Login(ctx *gin.Context) {
@@ -67,6 +68,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 		return
 	}
 	res, err := h.Auth.Login(ctx, req)
+	
 	if err != nil {
 		ctx.JSON(401, gin.H{"error": err})
 		return
@@ -75,16 +77,27 @@ func (h *Handler) Login(ctx *gin.Context) {
 		ctx.JSON(400, res)
 		return
 	}
-	fmt.Println(res.Id)
-	token, err := h.Redis.Get("token:"+res.Id)
+	tokens, err := h.Redis.Get("token:" + res.Id)
 	if err != nil {
-		if err == redis.Nil {
-			log.Printf("Key %s does not exist", res.Id)
+		if err.Error() == "redis: nil" {
+			tokendata, err := h.Auth.UpdateToken(ctx, &pb.UpdateTokenRequest{Id: res.Id})
+			if err != nil {
+				log.Printf("Error getting tokendata %s: %v", res.Id, err)
+				ctx.JSON(400, err)
+				return
+			}
+			tokens := token.GenereteJWTToken(tokendata)
+			err = h.Redis.SaveToken(res.Id, tokens.RefreshToken, 30*24*time.Hour)
+			if err!=nil{
+				slog.Info("Error while SaveToken:", err)
+			}
+			ctx.JSON(200, tokens.RefreshToken)
+			return
 		} else {
 			log.Printf("Error getting key %s: %v", res.Id, err)
 		}
 	}
-	ctx.JSON(200, token)
+	ctx.JSON(200, tokens)
 }
 
 // ForgotPassword handles forgot password requests

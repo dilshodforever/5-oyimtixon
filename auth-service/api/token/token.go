@@ -38,7 +38,7 @@ func GenereteJWTToken(user *pb.RegisterResponse) *Tokens {
 	claims["id"] = user.Id
 	claims["username"] = user.Name
 	claims["email"] = user.Email
-	claims["role"]="user"
+	claims["role"]=user.Role
 	claims["iat"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(60 * time.Minute).Unix()
 	access, err := accessToken.SignedString([]byte(tokenKey))

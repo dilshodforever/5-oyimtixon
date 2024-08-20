@@ -26,6 +26,7 @@ type AuthServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*ForgotPasswordResponse, error)
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ResetPasswordResponse, error)
+	UpdateToken(ctx context.Context, in *UpdateTokenRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 }
 
 type authServiceClient struct {
@@ -72,6 +73,15 @@ func (c *authServiceClient) ResetPassword(ctx context.Context, in *ResetPassword
 	return out, nil
 }
 
+func (c *authServiceClient) UpdateToken(ctx context.Context, in *UpdateTokenRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -80,6 +90,7 @@ type AuthServiceServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	ForgotPassword(context.Context, *ForgotPasswordRequest) (*ForgotPasswordResponse, error)
 	ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error)
+	UpdateToken(context.Context, *UpdateTokenRequest) (*RegisterResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -98,6 +109,9 @@ func (UnimplementedAuthServiceServer) ForgotPassword(context.Context, *ForgotPas
 }
 func (UnimplementedAuthServiceServer) ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateToken(context.Context, *UpdateTokenRequest) (*RegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateToken not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -184,6 +198,24 @@ func _AuthService_ResetPassword_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_UpdateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UpdateToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateToken(ctx, req.(*UpdateTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +238,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResetPassword",
 			Handler:    _AuthService_ResetPassword_Handler,
+		},
+		{
+			MethodName: "UpdateToken",
+			Handler:    _AuthService_UpdateToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

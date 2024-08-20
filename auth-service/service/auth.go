@@ -43,3 +43,13 @@ func (a *AuthService) ResetPassword(ctx context.Context, req *pb.ResetPasswordRe
 	}
 	return res, nil
 }
+
+
+func (a *AuthService) UpdateToken(ctx context.Context, req *pb.UpdateTokenRequest) (*pb.RegisterResponse, error) {
+	res, err:=a.stg.Auth().UpdateToken(req)
+	if err != nil {
+		log.Print("Error while update token: ",err)
+		return nil, err
+	}
+	return res, nil
+}

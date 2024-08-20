@@ -66,3 +66,23 @@ func (p *AuthStorage) ResetPassword(req *pb.ResetPasswordRequest) (*pb.ResetPass
 	}
 	return &pb.ResetPasswordResponse{Message: "Password reset successfully"}, nil
 }
+
+
+
+
+func (p *AuthStorage) UpdateToken(req *pb.UpdateTokenRequest) (*pb.RegisterResponse, error) {
+	var profile pb.RegisterResponse
+	query := `
+		SELECT id, username, email, role
+		FROM users
+		WHERE id = $1
+	`
+	err := p.db.QueryRow(query, req.Id).Scan(
+		&profile.Id, &profile.Name, &profile.Email,
+		&profile.Role,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &profile, nil
+}
