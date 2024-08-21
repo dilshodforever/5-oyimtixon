@@ -47,7 +47,7 @@ func Connect() (*gin.Engine, error) {
 	defer UserConn.Close()
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: "redis:6379",
 	})
 
 	redisstorage := handler.NewInMemoryStorage(rdb)
