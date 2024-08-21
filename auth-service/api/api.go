@@ -52,6 +52,6 @@ func NewGin(h *handler.Handler) *gin.Engine {
 		u.PUT("/profile", h.UpdateProfile)
 		u.PUT("/change-password", h.ChangePassword)
 	}
-//
+
 	return r
 }
