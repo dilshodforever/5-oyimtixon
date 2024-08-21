@@ -53,12 +53,11 @@ func (r *storageRedis) SaveEmailCode(email, code string, exp time.Duration) erro
 }
 func (r *storageRedis) SaveToken(id, token string, exp time.Duration) error {
 	key := "token:" + id
-	fmt.Println("Saving token:", token, "with key:", key, "and expiration:", exp)
 	err := r.Set(key, token, exp)
 	if err != nil {
 		fmt.Println("Error in SaveToken:", err)
 		return err
 	}
-	fmt.Println("Token saved successfully")
+	
 	return nil
 }
